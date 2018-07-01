@@ -16,6 +16,6 @@ void loop() {
 }
 
 void requestEvent(){
-  i2cSender.Update();
+  i2cSender.update();
 }
 

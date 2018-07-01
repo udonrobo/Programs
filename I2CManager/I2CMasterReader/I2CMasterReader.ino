@@ -8,7 +8,7 @@ void setup() {
 }
 
 void loop() {
-  i2cRead.Update();
+  i2cRead.update();
   //i2cRead.show();
   //Serial.print("\t");
   Serial.println(i2cRead.getData(1));

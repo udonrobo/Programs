@@ -9,20 +9,20 @@
 
 class SlaveSender {
   private:
-    const int i2cAddress;
+    const int I2CADDRESS;
     byte* data;
     int Size;
 
   public:
-    slaveSender(int arraySize);
+    SlaveSender(int arraySize);
   // デストラクタ
-    virtual ~slaveSender() {
+    virtual ~SlaveSender() {
       delete[] data;
     }
     void setData(int arrayNum, byte Data);
     void setBitData(int arrayNum, int BitNum, bool Data);
     void Reset();
-    void Update();
+    void update();
     void show();
 };
 
@@ -30,7 +30,7 @@ class SlaveSender {
   コンストラクタ
   @param arraySize 送信するデータの個数
 */
-slaveSender::slaveSender(int arraySize) {
+SlaveSender::SlaveSender(int arraySize) {
   data = new byte[arraySize];
   Size = arraySize;
 }
@@ -40,7 +40,7 @@ slaveSender::slaveSender(int arraySize) {
   @param arrayNum 何番目の配列か
   @param Data 送信する値(0-255)
 */
-void slaveSender::setData(int arrayNum, byte Data) {
+void SlaveSender::setData(int arrayNum, byte Data) {
   Data = constrain(Data, 0, 255);
   data[arrayNum - 1] = Data;
 }
@@ -51,13 +51,13 @@ void slaveSender::setData(int arrayNum, byte Data) {
   @param BitNum   何番目のbitか
   @param Data     送信する値(1or0)
 */
-void slaveSender::setBitData(int arrayNum, int BitNum, bool Data) {
+void SlaveSender::setBitData(int arrayNum, int BitNum, bool Data) {
   Data = (bool)Data;
   bitWrite(data[arrayNum-1], BitNum - 1, Data);
 }
 
 //送るデータのリセット
-void slaveSender::Reset() {
+void SlaveSender::Reset() {
   for (int i = 0; i < Size; i++)
     data[i] = 0;
 }
@@ -66,12 +66,12 @@ void slaveSender::Reset() {
   masterに送信
   requestEvent内で実行
 */
-void slaveSender::Update() {
+void SlaveSender::update() {
   Wire.write(data, Size);
 }
 
 //送信するデータの表示
-void slaveSender::show() {
+void SlaveSender::show() {
   for (int i = 0; i < Size; i++) {
     Serial.print(data[i]);
     Serial.print("\t");

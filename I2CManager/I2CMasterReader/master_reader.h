@@ -10,17 +10,17 @@
 
 class MasterReader {
   private:
-    int i2cAddress;
+    int I2CADDRESS;
     byte* data;
-    int Size;
+    int size;
 
   public:
-    masterReader(int Address, int arraySize);
-  // デストラクタ
-    virtual ~masterReader() {
+    MasterReader(int address, int arraySize);
+    // デストラクタ
+    virtual ~MasterReader() {
       delete[] data;
     }
-    void Update();
+    void update();
     byte getData(int arrayNum);
     bool getBitData(int arrayNum, int bitNum);
     void show();
@@ -31,19 +31,19 @@ class MasterReader {
   @param Address I2Cアドレス
   @param arraySize 送信するデータ個数
 */
-masterReader::masterReader(int Address, int arraySize) {
+MasterReader::MasterReader(int address, int arraySize) {
   data = new byte[arraySize];
-  for (int i = 0; i < arraySize; i++) 
+  for (int i = 0; i < arraySize; i++)
     data[i] = 0;
-  Size = arraySize;
-  i2cAddress = Address;
+  size = arraySize;
+  I2CADDRESS = address;
 }
 
 //slave側から受け取り
-void masterReader::Update() {
-  Wire.requestFrom(i2cAddress, Size);
+void MasterReader::update() {
+  Wire.requestFrom(I2CADDRESS, size);
   while (Wire.available()) {
-    for (int i = 0; i < Size; i++)
+    for (int i = 0; i < size; i++)
       data[i] = Wire.read();
   }
 }
@@ -52,7 +52,7 @@ void masterReader::Update() {
   送られてきたデータの取得
   @param 何個目のデータか
 */
-byte masterReader::getData(int arrayNum) {
+byte MasterReader::getData(int arrayNum) {
   return data[arrayNum - 1];
 }
 
@@ -61,13 +61,13 @@ byte masterReader::getData(int arrayNum) {
   @param 何個目のデータか
   @param 何個目のbitか
 */
-bool masterReader::getBitData(int arrayNum, int bitNum) {
+bool MasterReader::getBitData(int arrayNum, int bitNum) {
   return bitRead(data[arrayNum], bitNum);
 }
 
 //送られてきたデータの全ての表示
-void masterReader::show() {
-  for (int i = 0; i < Size; i++) {
+void MasterReader::show() {
+  for (int i = 0; i < size; i++) {
     Serial.print(data[i]);
     Serial.print("\t");
   }
