@@ -19,9 +19,9 @@ class SlaveSender {
     virtual ~SlaveSender() {
       delete[] data;
     }
-    void setData(int arrayNum, byte Data);
-    void setBitData(int arrayNum, int BitNum, bool Data);
-    void Reset();
+    void setData(int arrayNum, byte value);
+    void setBitData(int arrayNum, int bitNum, bool value);
+    void reset();
     void update();
     void show();
 };
@@ -38,26 +38,26 @@ SlaveSender::SlaveSender(int arraySize) {
 /*
   指定した配列にデータをセット
   @param arrayNum 何番目の配列か
-  @param Data 送信する値(0-255)
+  @param data 送信する値(0-255)
 */
-void SlaveSender::setData(int arrayNum, byte Data) {
-  Data = constrain(Data, 0, 255);
-  data[arrayNum - 1] = Data;
+void SlaveSender::setData(int arrayNum, byte value) {
+  value = constrain(value, 0, 255);
+  data[arrayNum - 1] = value;
 }
 
 /*
   指定した配列の指定したbitにデータをセット
   @param arrayNum 何番目の配列か
   @param BitNum   何番目のbitか
-  @param Data     送信する値(1or0)
+  @param data     送信する値(1or0)
 */
-void SlaveSender::setBitData(int arrayNum, int BitNum, bool Data) {
-  Data = (bool)Data;
-  bitWrite(data[arrayNum-1], BitNum - 1, Data);
+void SlaveSender::setBitData(int arrayNum, int bitNum, bool value) {
+  value = (bool)value;
+  bitWrite(data[arrayNum-1], bitNum - 1, value);
 }
 
 //送るデータのリセット
-void SlaveSender::Reset() {
+void SlaveSender::reset() {
   for (int i = 0; i < Size; i++)
     data[i] = 0;
 }

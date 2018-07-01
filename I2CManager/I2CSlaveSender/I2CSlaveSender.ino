@@ -6,7 +6,7 @@ void setup() {
   Wire.begin(8);
   Wire.onRequest(requestEvent);
   Serial.begin(115200);
-  i2cSender.Reset();
+  i2cSender.reset();
 }
 
 void loop() {
