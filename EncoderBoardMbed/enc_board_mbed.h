@@ -6,87 +6,125 @@
 
 #pragma once
 
-#include<Wire.h>
+#include <Wire.h>
 
-class EncoderBoardMbed {
-  
-  private:
-    int mADDR; //I2Cアドレス
+class EncoderBoardMbed
+{
 
-    long mEncBuf[4][4];
-    long mOffsetEncData[4],mNowEncData[4];
-    
-  public:
+private:
+  int ADDR; //I2Cアドレス
 
-    /*
+  //4byteのデータが1byte区切りで送られてくるのでそれぞれを一時格納しておく
+  long buf[4][4];
+
+  long offsetCount[4], nowCount[4];
+
+public:
+  /*
           コンストラクタ
-          @param ADDR MbedとのI2Cアドレス
+          @param address MbedとのI2Cアドレス
     */
-    EncoderBoardMbed(int ADDR) {
-      mADDR = ADDR >> 1; // Mbed->7bit，Arduino->8bitでアドレス指定するので右に一つシフト
-    }
+  EncoderBoardMbed(int address)
+  {
+    ADDR = address >> 1; // Mbed => 7bit，Arduino => 8bitでアドレス指定するので右に一つシフト
 
-    /*
+    for (int i = 0; i < 4; i++)
+    {
+      nowCount[i] = 0;
+      offsetCount[i] = 0;
+    }
+  }
+
+  /*
+    デストラクタ
+  */
+  virtual ~EncoderBoardMbed() {}
+
+  /*
        mbedから全てのエンコーダの値を受信
     */
-    void Update() {
-      Wire.requestFrom(mADDR, 16);
-      while(Wire.available()>=16){
-            mEncBuf[0][0] = Wire.read();
-            mEncBuf[0][1] = Wire.read();
-            mEncBuf[0][2] = Wire.read();
-            mEncBuf[0][3] = Wire.read();
+  void update()
+  {
+    Wire.requestFrom(ADDR, 16); //データ要求
 
-            mEncBuf[1][0] = Wire.read();
-            mEncBuf[1][1] = Wire.read();
-            mEncBuf[1][2] = Wire.read();
-            mEncBuf[1][3] = Wire.read();
+    while (Wire.available() >= 16)
+    {
 
-            mEncBuf[2][0] = Wire.read();
-            mEncBuf[2][1] = Wire.read();
-            mEncBuf[2][2] = Wire.read();
-            mEncBuf[2][3] = Wire.read();
+      buf[0][0] = Wire.read();
+      buf[0][1] = Wire.read();
+      buf[0][2] = Wire.read();
+      buf[0][3] = Wire.read();
 
-            mEncBuf[3][0] = Wire.read();
-            mEncBuf[3][1] = Wire.read();
-            mEncBuf[3][2] = Wire.read();
-            mEncBuf[3][3] = Wire.read();
-      }
-      
-      mOffsetEncData[0] = (mEncBuf[0][0] << 24) | (mEncBuf[0][1] << 16) | (mEncBuf[0][2] << 8) | mEncBuf[0][3];
-      mOffsetEncData[1] = (mEncBuf[1][0] << 24) | (mEncBuf[1][1] << 16) | (mEncBuf[1][2] << 8) | mEncBuf[1][3];
-      mOffsetEncData[2] = (mEncBuf[2][0] << 24) | (mEncBuf[2][1] << 16) | (mEncBuf[2][2] << 8) | mEncBuf[2][3];
-      mOffsetEncData[3] = (mEncBuf[3][0] << 24) | (mEncBuf[3][1] << 16) | (mEncBuf[3][2] << 8) | mEncBuf[3][3];
-    
+      buf[1][0] = Wire.read();
+      buf[1][1] = Wire.read();
+      buf[1][2] = Wire.read();
+      buf[1][3] = Wire.read();
+
+      buf[2][0] = Wire.read();
+      buf[2][1] = Wire.read();
+      buf[2][2] = Wire.read();
+      buf[2][3] = Wire.read();
+
+      buf[3][0] = Wire.read();
+      buf[3][1] = Wire.read();
+      buf[3][2] = Wire.read();
+      buf[3][3] = Wire.read();
     }
 
-    /*
+    //ビットシフトして4byteに復元
+    nowCount[0] = (buf[0][0] << 24) | (buf[0][1] << 16) | (buf[0][2] << 8) | buf[0][3];
+    nowCount[1] = (buf[1][0] << 24) | (buf[1][1] << 16) | (buf[1][2] << 8) | buf[1][3];
+    nowCount[2] = (buf[2][0] << 24) | (buf[2][1] << 16) | (buf[2][2] << 8) | buf[2][3];
+    nowCount[3] = (buf[3][0] << 24) | (buf[3][1] << 16) | (buf[3][2] << 8) | buf[3][3];
+  }
+
+  /*
       エンコーダ基板の初期化
     */
+  void init()
+  {
+    update();
+    resetCount();
+  }
 
-   void init(){
-     Update();
-     resetCount();
-   }
-
-
-    /*
+  /*
     　エンコーダの回転数を取得
       @param port 基板のポート番号
     */
-    long getCount(int port) {
-      return mNowEncData[port-1] - mEncData[port-1];
-    }
+  long getCount(int port)
+  {
+    return nowCount[port - 1] - offsetCount[port - 1];
+  }
 
+  /*
+      オーバーロード
+    　エンコーダの全ポートの回転数を取得
+      @param val[] 値を受け取る配列
+    */
+  void getCount(long val[])
+  {
+    for (int i = 0; i < 4; i++)
+      val[i] = nowCount[i] - offsetCount[i];
+  }
 
-    /*
+  /*
       エンコーダの回転数の初期化
       @param port 基板のポート番号
     */
+  void resetCount(int port)
+  {
+    offsetCount[port - 1] = nowCount[port - 1];
+  }
 
-    void resetCount(int port){
-      mOffsetEncData[port-1] = mNowEncData[port-1];
+  /*
+      オーバーロード
+      エンコーダの全ポートの回転数の初期化
+    */
+  void resetCount()
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      offsetCount[i] = nowCount[i];
     }
-
+  }
 };
-
