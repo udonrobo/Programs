@@ -8,8 +8,8 @@
 
 #include <Wire.h>
 
-constexpr int16_t CutAnalogValue = 20;  // アナログスティックの中間不感値
-constexpr int16_t CutValue = CutAnalogValue * 2;
+constexpr int16_t cutAnalogValue = 20;  // アナログスティックの中間不感値
+constexpr int16_t cutValue = cutAnalogValue * 2;
 
   struct buttonData {
   bool oldData = 0;
@@ -24,31 +24,31 @@ class ControllerManagerDS4 {
     bool L2, R2, L1, R1, Triangle, Circle, Cross, Square;
     bool Touch;
 
-    int16_t LeftHatX, LeftHatY;
-    int16_t RightHatX, RightHatY;
+    int16_t leftHatX, leftHatY;
+    int16_t rightHatX, rightHatY;
     int16_t AnalogL2, AnalogR2;
 
-    int16_t RightHatX_map, RightHatY_map;
-    int16_t LeftHatX_map, LeftHatY_map;
+    int16_t rightHatX_map, rightHatY_map;
+    int16_t leftHatX_map, leftHatY_map;
 
     int16_t theta;
     uint16_t r;
     int16_t LeftxAxis, LeftyAxis, RightxAxis;
 
     buttonData buttonStock[17];
-    bool Click_Data[17] = {};
-    bool Toggle_Data[17] = {};
+    bool clickData[17] = {};
+    bool toggleData[17] = {};
 
-    int CountUp_Data[17] = {};
+    int countUpData[17] = {};
 
-    const int I2C_Address;
+    const int I2C_ADDR;
 
   public:
 
-    ControllerManager(int Address) : I2C_Address(Address) {}
+    ControllerManager(int ADDR) : I2C_ADDR(ADDR) {}
 
     void Update() {
-      Wire.requestFrom(I2C_Address, 9);
+      Wire.requestFrom(I2C_ADDR, 9);
       uint8_t buf[] = { 0, 0, 127, 127, 127, 127, 0, 0, 0};
       while (Wire.available()) {
         buf[0] = Wire.read();
@@ -106,301 +106,301 @@ class ControllerManagerDS4 {
 
       for (int i = 0; i < 17; i++) {
         if (buttonStock[i].oldData == 0 && buttonStock[i].newData == 1) {
-          Click_Data[i] = true;
+          clickData[i] = true;
         }
         else
-          Click_Data[i] = false;
+          clickData[i] = false;
 
         buttonStock[i].oldData = buttonStock[i].newData;
       }
 
       for (int i = 0; i < 17; i++)
-        if (Click_Data[i])   Toggle_Data[i] ^= 1;
+        if (clickData[i])   toggleData[i] ^= 1;
 
       for (int i = 0; i < 17; i++)
-        if (Click_Data[i])       CountUp_Data[i]++;
+        if (clickData[i])       countUpData[i]++;
 
       if (PS) {
         for (int i = 0; i < 17; i++) {
-          CountUp_Data[i] = 0;
+          countUpData[i] = 0;
         }
       }
 
-      RightHatX_map = buf[2] - 127;
-      RightHatY_map = -(buf[3] - 127);
-      LeftHatX_map = buf[4] - 127;
-      LeftHatY_map = -(buf[5] - 127);
+      rightHatX_map = buf[2] - 127;
+      rightHatY_map = -(buf[3] - 127);
+      leftHatX_map = buf[4] - 127;
+      leftHatY_map = -(buf[5] - 127);
 
-      RightHatX = buf[2];
-      RightHatY = buf[3];
-      LeftHatX = buf[4];
-      LeftHatY = buf[5];
+      rightHatX = buf[2];
+      rightHatY = buf[3];
+      leftHatX = buf[4];
+      leftHatY = buf[5];
       AnalogL2 = buf[6];
       AnalogR2 = buf[7];
 
-      r = sqrt((LeftHatX_map * LeftHatX_map) + (LeftHatY_map * LeftHatY_map)) * 2;
+      r = sqrt((leftHatX_map * leftHatX_map) + (leftHatY_map * leftHatY_map)) * 2;
       r = constrain(r, 0, 255);
 
-      float Rad = atan2(LeftHatY_map, LeftHatX_map);
-      theta = round(degrees(Rad));
+      double rad = atan2(leftHatY_map, leftHatX_map);
+      theta = round(degrees(rad));
       if (theta < 0) theta += 360;
       if (theta > 359) theta -= 360;
 
     }
-    bool GetTouch() {
+    bool getTouch() {
       return Touch;
     }
-    bool GetPS() {
+    bool getPS() {
       return PS;
     }
-    bool GetStart() {
+    bool getStart() {
       return START;
     }
-    bool GetSelect() {
+    bool getSelect() {
       return Select;
     }
-    bool GetL3() {
+    bool getL3() {
       return L3;
     }
-    bool GetR3() {
+    bool getR3() {
       return R3;
     }
-    bool GetUp() {
+    bool getUp() {
       return Up;
     }
-    bool GetRight() {
+    bool getRight() {
       return Right;
     }
-    bool GetDown() {
+    bool getDown() {
       return Down;
     }
-    bool GetLeft() {
+    bool getLeft() {
       return Left;
     }
-    bool GetL2() {
+    bool getL2() {
       return L2;
     }
-    bool GetR2() {
+    bool getR2() {
       return R2;
     }
-    bool GetL1() {
+    bool getL1() {
       return L1;
     }
-    bool GetR1() {
+    bool getR1() {
       return R1;
     }
-    bool GetTriangle() {
+    bool getTriangle() {
       return Triangle;
     }
-    bool GetCircle() {
+    bool getCircle() {
       return Circle;
     }
-    bool GetCross() {
+    bool getCross() {
       return Cross;
     }
-    bool GetSquare() {
+    bool getSquare() {
       return Square;
     }
     /* Click */
-    bool GetTriangleClick() {
-      return Click_Data[0];
+    bool getTriangleClick() {
+      return clickData[0];
     }
-    bool GetCircleClick() {
-      return Click_Data[1];
+    bool getCircleClick() {
+      return clickData[1];
     }
-    bool GetCrossClick() {
-      return Click_Data[2];
+    bool getCrossClick() {
+      return clickData[2];
     }
-    bool GetSquareClick() {
-      return Click_Data[3];
-    }
-
-    bool GetUpClick() {
-      return Click_Data[4];
-    }
-    bool GetRightClick() {
-      return Click_Data[5];
-    }
-    bool GetDownClick() {
-      return Click_Data[6];
-    }
-    bool GetLeftClick() {
-      return Click_Data[7];
+    bool getSquareClick() {
+      return clickData[3];
     }
 
-    bool GetStartClick() {
-      return Click_Data[8];
+    bool getUpClick() {
+      return clickData[4];
     }
-    bool GetShareClick() {
-      return Click_Data[9];
+    bool getRightClick() {
+      return clickData[5];
     }
-    bool GetTouchClick() {
-      return Click_Data[10];
+    bool getDownClick() {
+      return clickData[6];
+    }
+    bool getLeftClick() {
+      return clickData[7];
     }
 
-    bool GetL2Click() {
-      return Click_Data[11];
+    bool getStartClick() {
+      return clickData[8];
     }
-    bool GetR2Click() {
-      return Click_Data[12];
+    bool getShareClick() {
+      return clickData[9];
     }
-    bool GetL1Click() {
-      return Click_Data[13];
+    bool getTouchClick() {
+      return clickData[10];
     }
-    bool GetR1Click() {
-      return Click_Data[14];
+
+    bool getL2Click() {
+      return clickData[11];
     }
-    bool GetL3Click() {
-      return Click_Data[15];
+    bool getR2Click() {
+      return clickData[12];
     }
-    bool GetR3Click() {
-      return Click_Data[16];
+    bool getL1Click() {
+      return clickData[13];
+    }
+    bool getR1Click() {
+      return clickData[14];
+    }
+    bool getL3Click() {
+      return clickData[15];
+    }
+    bool getR3Click() {
+      return clickData[16];
     }
 
     /*    Toggle    */
-    bool GetTriangleToggle() {
-      return Toggle_Data[0];
+    bool getTriangleToggle() {
+      return toggleData[0];
     }
-    bool GetCircleToggle() {
-      return Toggle_Data[1];
+    bool getCircleToggle() {
+      return toggleData[1];
     }
-    bool GetCrossToggle() {
-      return Toggle_Data[2];
+    bool getCrossToggle() {
+      return toggleData[2];
     }
-    bool GetSquareToggle() {
-      return Toggle_Data[3];
-    }
-
-    bool GetUpToggle() {
-      return Toggle_Data[4];
-    }
-    bool GetRightToggle() {
-      return Toggle_Data[5];
-    }
-    bool GetDownToggle() {
-      return Toggle_Data[6];
-    }
-    bool GetLeftToggle() {
-      return Toggle_Data[7];
+    bool getSquareToggle() {
+      return toggleData[3];
     }
 
-    bool GetStartToggle() {
-      return Toggle_Data[8];
+    bool getUpToggle() {
+      return toggleData[4];
     }
-    bool GetShareToggle() {
-      return Toggle_Data[9];
+    bool getRightToggle() {
+      return toggleData[5];
     }
-    bool GetTouchToggle() {
-      return Toggle_Data[10];
+    bool getDownToggle() {
+      return toggleData[6];
+    }
+    bool getLeftToggle() {
+      return toggleData[7];
     }
 
-    bool GetL2Toggle() {
-      return Toggle_Data[11];
+    bool getStartToggle() {
+      return toggleData[8];
     }
-    bool GetR2Toggle() {
-      return Toggle_Data[12];
+    bool getShareToggle() {
+      return toggleData[9];
     }
-    bool GetL1Toggle() {
-      return Toggle_Data[13];
+    bool getTouchToggle() {
+      return toggleData[10];
     }
-    bool GetR1Toggle() {
-      return Toggle_Data[14];
+
+    bool getL2Toggle() {
+      return toggleData[11];
     }
-    bool GetL3Toggle() {
-      return Toggle_Data[15];
+    bool getR2Toggle() {
+      return toggleData[12];
     }
-    bool GetR3Toggle() {
-      return Toggle_Data[16];
+    bool getL1Toggle() {
+      return toggleData[13];
+    }
+    bool getR1Toggle() {
+      return toggleData[14];
+    }
+    bool getL3Toggle() {
+      return toggleData[15];
+    }
+    bool getR3Toggle() {
+      return toggleData[16];
     }
 
     /*      CountUp     */
-    int GetTriangleCountUp() {
-      return CountUp_Data[0];
+    int getTriangleCountUp() {
+      return countUpData[0];
     }
-    int GetCircleCountUp() {
-      return CountUp_Data[1];
+    int getCircleCountUp() {
+      return countUpData[1];
     }
-    int GetCrossCountUp() {
-      return CountUp_Data[2];
+    int getCrossCountUp() {
+      return countUpData[2];
     }
-    int GetSquareCountUp() {
-      return CountUp_Data[3];
-    }
-
-    int GetUpCountUp() {
-      return CountUp_Data[4];
-    }
-    int GetRightCountUp() {
-      return CountUp_Data[5];
-    }
-    int GetDownCountUp() {
-      return CountUp_Data[6];
-    }
-    int GetLeftCountUp() {
-      return CountUp_Data[7];
+    int getSquareCountUp() {
+      return countUpData[3];
     }
 
-    int GetStartCountUp() {
-      return CountUp_Data[8];
+    int getUpCountUp() {
+      return countUpData[4];
     }
-    int GetShareCountUp() {
-      return CountUp_Data[9];
+    int getRightCountUp() {
+      return countUpData[5];
     }
-    int GetTouchCountUp() {
-      return CountUp_Data[10];
+    int getDownCountUp() {
+      return countUpData[6];
     }
-
-    int GetL2CountUp() {
-      return CountUp_Data[11];
-    }
-    int GetR2CountUp() {
-      return CountUp_Data[12];
-    }
-    int GetL1CountUp() {
-      return CountUp_Data[13];
-    }
-    int GetR1CountUp() {
-      return CountUp_Data[14];
-    }
-    int GetL3CountUp() {
-      return CountUp_Data[15];
-    }
-    int GetR3CountUp() {
-      return CountUp_Data[16];
+    int getLeftCountUp() {
+      return countUpData[7];
     }
 
-    int16_t GetLeftHatX() {
-      return LeftHatX;
+    int getStartCountUp() {
+      return countUpData[8];
     }
-    int16_t GetLeftHatY() {
-      return LeftHatY;
+    int getShareCountUp() {
+      return countUpData[9];
     }
-    int16_t GetRightHatX() {
-      return RightHatX;
+    int getTouchCountUp() {
+      return countUpData[10];
     }
-    int16_t GetRightHatY() {
-      return RightHatY;
+
+    int getL2CountUp() {
+      return countUpData[11];
     }
-    int16_t GetAnalogL2() {
+    int getR2CountUp() {
+      return countUpData[12];
+    }
+    int getL1CountUp() {
+      return countUpData[13];
+    }
+    int getR1CountUp() {
+      return countUpData[14];
+    }
+    int getL3CountUp() {
+      return countUpData[15];
+    }
+    int getR3CountUp() {
+      return countUpData[16];
+    }
+
+    int16_t getleftHatX() {
+      return leftHatX;
+    }
+    int16_t getleftHatY() {
+      return leftHatY;
+    }
+    int16_t getrightHatX() {
+      return rightHatX;
+    }
+    int16_t getrightHatY() {
+      return rightHatY;
+    }
+    int16_t getAnalogL2() {
       return AnalogL2;
     }
-    int16_t GetAnalogR2() {
+    int16_t getAnalogR2() {
       return AnalogR2;
     }
 
-    int16_t Gettheta() {
+    int16_t gettheta() {
       return theta;
     }
-    uint16_t Getr() {
+    uint16_t getr() {
       return r;
     }
-    int16_t GetLeftxAxis() {
+    int16_t getLeftxAxis() {
       return LeftxAxis;
     }
-    int16_t GetLeftyAxis() {
+    int16_t getLeftyAxis() {
       return LeftyAxis;
     }
-    int16_t GetRightxAxis() {
+    int16_t getRightxAxis() {
       return RightxAxis;
     }
 };
