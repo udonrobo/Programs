@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include"enc_board_mbed.h"
 
-#define ADDR 2
+const int ADDR = 2;
 
 EncoderBoardMbed enc(ADDR);
 
@@ -17,7 +17,7 @@ void setup() {
 void loop() {
 
   //port1に接続されているエンコーダの値を表示
-  Serial.println(enc.getCount(1));  
+  Serial.println(enc.getCount(1));
 
 
   enc.Update();
