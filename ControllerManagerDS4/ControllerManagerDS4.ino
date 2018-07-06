@@ -13,7 +13,7 @@ void setup()
 
 void loop()
 {
-    DS4.Update();
+    DS4.update();
 
-    Serial.println(DS4.GetCircle());
+    Serial.println(DS4.getCircle());
 }
