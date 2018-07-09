@@ -20,6 +20,6 @@ void loop() {
   Serial.println(enc.getCount(1));
 
 
-  enc.Update();
+  enc.update();
 }
 
