@@ -1,9 +1,7 @@
 /*
-
   @program I2C通信でslaveへデータを送信するクラス
   @date 2018/06/25
   @author Watanabe Rui
-
 */
 
 #pragma once
@@ -11,83 +9,82 @@
 #include <arduino.h>
 #include <Wire.h>
 
-class i2cMasterWriter
+class I2CMasterWriter
 {
-private:
+  private:
 
-  const int M_ADDR;
-  uint8_t *mData;
-  uint *mSize;
+    const int ADDR;
+    uint8_t *data;
+    int size;
 
-public:
+  public:
 
-  /*  
-        コンストラクタ
-        @param  address     I2Cアドレス
-        @param  array_size  送信するデータ個数
-  */
-
-  i2cMasterWriter(int address, uint data_size) : M_ADDR(address), *mSize(data_size)
-  {
-
-    data_ = new uint8_t[*mSize];
-    for (int i = 0; i < *mSize; i++)
-      data_[i] = 0;
-  }
-
-  //  デストラクタ
-  virtual ~i2cMasterWriter()
-  {
-    delete[] data_;
-  }
-
-  //送るデータの中身を表示
-  void Show()
-  {
-    for (int i = 0; i < *mSize; i++)
+    /*
+          コンストラクタ
+          @param  address     I2Cアドレス
+          @param  dataSize  送信するデータ個数
+    */
+    I2CMasterWriter(int address, int dataSize) : ADDR(address), size(dataSize)
     {
-      Serial.print(data_[i]);
-      Serial.print("\t");
+
+      data = new uint8_t[size];
+
+      for (int i = 0; i < size; i++)
+        data[i] = 0;
+
     }
-    Serial.println("");
-  }
 
-  /*  
-        指定した添字の配列にデータをセット
-        @param  array_num  配列の添字
-        @param  val        送信する値 (0-255)
-  */
+    //  デストラクタ
+    virtual ~I2CMasterWriter()
+    {
+      delete[] data;
+    }
 
-  void setData(int array_num, uint8_t val)
-  {
-    data_[array_num] = val;
-  }
+    //送るデータの中身を表示
+    void show()
+    {
+      for (int i = 0; i < size; i++)
+      {
+        Serial.print(data[i]);
+        Serial.print("\t");
+      }
+      Serial.println("");
+    }
 
-  /*  
-        指定した添字の配列にビットデータをセット
-        @param  array_num  配列の添字
-        @param  bit_num    bit番号
-        @param  bit        1 or 0    
-  */
-  
-  void setBitData(int array_num, byte bit_num, bool bit)
-  {
-    bitWrite(data_[array_num], bit_num, bit);
-  }
+    /*
+          指定した添字の配列にデータをセット
+          @param  arrayNum  配列の添字
+          @param  val        [byte]送信する値
+    */
+    void setData(int arrayNum, byte val)
+    {
+      data[arrayNum] = val;
+    }
 
-  //  データの初期化
-  void Reset()
-  {
-    for (int i = 0; i < *mSize; i++)
-      data_[i] = 0;
-  }
+    /*
+          指定した添字の配列にビットデータをセット
+          @param  arrayNum  配列の添字
+          @param  bitNum    bit番号
+          @param  bit       1 or 0
+    */
+    void setBitData(int arrayNum, byte bitNum, bool bit)
+    {
+      bitWrite(data[arrayNum], bitNum, bit);
+    }
 
-  //  Slave側へ送信
-  void Update()
-  {
-    Wire.beginTransmission(M_ADDR);
-    Wire.write(data_, *mSize);
-    Wire.endTransmission();
-  }
+    //  データの初期化
+    void reset()
+    {
+      for (int i = 0; i < size; i++)
+        data[i] = 0;
+    }
+
+    //  Slave側へ送信
+    void update()
+    {
+      Wire.beginTransmission(ADDR);
+      Wire.write(data, size);
+      Wire.endTransmission();
+    }
 
 };

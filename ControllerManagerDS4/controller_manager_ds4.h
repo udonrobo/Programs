@@ -396,6 +396,7 @@ public:
   {
     return rightHatY;
   }
+
   int16_t getAnalogL2()
   {
     return analogL2;
@@ -405,7 +406,7 @@ public:
     return analogR2;
   }
 
-  int16_t getTheta()
+  int16_t getThetaDeg()
   {
     return theta;
   }
