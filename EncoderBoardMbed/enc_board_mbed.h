@@ -83,7 +83,7 @@ public:
     */
   void init()
   {
-    //updateを二回行うと値を取りこぼす
+    //updateを二回やらないと値を取りこぼす
     for (int i = 0; i < 2; i++)
       update();
 
