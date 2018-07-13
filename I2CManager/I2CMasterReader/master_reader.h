@@ -22,7 +22,7 @@ class MasterReader {
     }
     void update();
     byte getData(int arrayNum);
-    bool getBitData(int arrayNum, int bitNum);
+    bool getBitData(int arrayNum, byte bitNum);
     void show();
 };
 
@@ -61,7 +61,7 @@ byte MasterReader::getData(int arrayNum) {
   @param 何個目のデータか
   @param 何個目のbitか
 */
-bool MasterReader::getBitData(int arrayNum, int bitNum) {
+bool MasterReader::getBitData(int arrayNum, byte bitNum) {
   return bitRead(data[arrayNum], bitNum);
 }
 

@@ -20,7 +20,7 @@ class SlaveSender {
       delete[] data;
     }
     void setData(int arrayNum, byte value);
-    void setBitData(int arrayNum, int bitNum, bool value);
+    void setBitData(int arrayNum, byte bitNum, bool value);
     void reset();
     void update();
     void show();
@@ -51,7 +51,7 @@ void SlaveSender::setData(int arrayNum, byte value) {
   @param BitNum   何番目のbitか
   @param data     送信する値(1or0)
 */
-void SlaveSender::setBitData(int arrayNum, int bitNum, bool value) {
+void SlaveSender::setBitData(int arrayNum, byte bitNum, bool value) {
   value = (bool)value;
   bitWrite(data[arrayNum-1], bitNum - 1, value);
 }
