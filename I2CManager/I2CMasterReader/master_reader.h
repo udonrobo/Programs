@@ -22,7 +22,7 @@ class MasterReader {
     }
     void update();
     byte getData(int arrayNum);
-    bool getBitData(int arrayNum, byte bitNum);
+    bool getBitData(int arrayNum, int bitNum);
     void show();
 };
 
@@ -50,7 +50,7 @@ void MasterReader::update() {
 
 /*
   送られてきたデータの取得
-  @param 何個目のデータか
+  @param arrayNum 何個目のデータか
 */
 byte MasterReader::getData(int arrayNum) {
   return data[arrayNum - 1];
@@ -58,11 +58,11 @@ byte MasterReader::getData(int arrayNum) {
 
 /*
   送られてきたデータのbitの取得
-  @param 何個目のデータか
-  @param 何個目のbitか
+  @param arrayNum 何個目のデータか
+  @param bitNum 何個目のbitか
 */
-bool MasterReader::getBitData(int arrayNum, byte bitNum) {
-  return bitRead(data[arrayNum], bitNum);
+bool MasterReader::getBitData(int arrayNum, int bitNum) {
+  return bitRead(data[arrayNum-1], bitNum);
 }
 
 //送られてきたデータの全ての表示

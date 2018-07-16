@@ -19,7 +19,7 @@ class SlaveSender {
     virtual ~SlaveSender() {
       delete[] data;
     }
-    void setData(int arrayNum, byte value);
+    void setData(int arrayNum, int value);
     void setBitData(int arrayNum, byte bitNum, bool value);
     void reset();
     void update();
@@ -48,12 +48,12 @@ void SlaveSender::setData(int arrayNum, byte value) {
 /*
   指定した配列の指定したbitにデータをセット
   @param arrayNum 何番目の配列か
-  @param BitNum   何番目のbitか
-  @param data     送信する値(1or0)
+  @param BitNum   何番目のbitか(0～7)
+  @param value     送信する値(1or0)
 */
-void SlaveSender::setBitData(int arrayNum, byte bitNum, bool value) {
+void SlaveSender::setBitData(int arrayNum, int bitNum, bool value) {
   value = (bool)value;
-  bitWrite(data[arrayNum-1], bitNum - 1, value);
+  bitWrite(data[arrayNum-1], bitNum , value);
 }
 
 //送るデータのリセット
